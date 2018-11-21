@@ -15,9 +15,9 @@ module.exports = appInfo => {
 
   config.security = {
     csrf: {
-      enable: false,
+      enable: false
     },
-    domainWhiteList: [ 'http://localhost:8000' ],
+    domainWhiteList: [ 'http://localhost:8000' ]
   }
 
   config.multipart = {
@@ -28,15 +28,25 @@ module.exports = appInfo => {
     saltRounds: 10 // default 10
   }
 
-  config.mongoose = {
-    url: 'mongodb://127.0.0.1:27017/egg_x',
-    options: {
-      useMongoClient: true,
-      autoReconnect: true,
-      reconnectTries: Number.MAX_VALUE,
-      bufferMaxEntries: 0,
+  config.mysql = {
+    // 单数据库信息配置
+    client: {
+      // host
+      host: '193.112.155.251',
+      // 端口号
+      port: '3306',
+      // 用户名
+      user: 'root',
+      // 密码
+      password: '*****',
+      // 数据库名
+      database: 'car_app',
     },
-  }
+    // 是否加载到 app 上，默认开启
+    app: true,
+    // 是否加载到 agent 上，默认关闭
+    agent: false,
+  };
 
   config.jwt = {
     secret: 'Great4-M',

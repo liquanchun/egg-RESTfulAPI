@@ -42,4 +42,14 @@ module.exports = app => {
   router.get('/api/upload', controller.upload.index)
   router.delete('/api/upload', controller.upload.removes)
   // router.resources('upload', '/api/upload', controller.upload)
+
+  //通用接口路由定义
+  router.get('/api/data/:table/:id', controller.data.show)
+  router.get('/api/data/:table', controller.data.table)
+  router.post('/api/datalist/:table', controller.data.list)
+  router.post('/api/datalist/page/:table', controller.data.listpage)
+  router.post('/api/data/:table', controller.data.create)
+  router.post('/api/data/:table/:id', controller.data.update)
+  router.post('/api/datadel/:table', controller.data.removes)
+  router.post('/api/datadel/:table/:id', controller.data.destroy)
 }

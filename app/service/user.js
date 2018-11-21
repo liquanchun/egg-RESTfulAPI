@@ -4,12 +4,9 @@ class UserService extends Service {
   // create======================================================================================================>
   async create(payload) {
     const { ctx, service } = this
-    const role = await service.role.show(payload.role)
-    if (!role) {
-      ctx.throw(404, 'role is not found')
-    }
-    payload.password = await this.ctx.genHash(payload.password)
-    return ctx.model.User.create(payload)
+    //payload.password = await this.ctx.genHash(payload.password)
+    const result = await this.app.mysql.insert('sys_user', payload);
+    return result.affectedRows
   }
 
   // destroy======================================================================================================>  
@@ -34,11 +31,11 @@ class UserService extends Service {
 
   // show======================================================================================================>
   async show(_id) {
-    const user = await this.ctx.service.user.find(_id)
+    const user = await this.app.mysql.get('sys_user', { id: _id });
     if (!user) {
       this.ctx.throw(404, 'user not found')
     }
-    return this.ctx.model.User.findById(_id).populate('role')
+    return user
   }
 
   // index======================================================================================================>
@@ -49,18 +46,18 @@ class UserService extends Service {
     let skip = ((Number(currentPage)) - 1) * Number(pageSize || 10)
     if(isPaging) {
       if(search) {
-        res = await this.ctx.model.User.find({mobile: { $regex: search } }).populate('role').skip(skip).limit(Number(pageSize)).sort({ createdAt: -1 }).exec()
+        res = await this.ctx.model.User.find({mobile: { $regex: search } }).skip(skip).limit(Number(pageSize)).sort({ createdAt: -1 }).exec()
         count = res.length
       } else {
-        res = await this.ctx.model.User.find({}).populate('role').skip(skip).limit(Number(pageSize)).sort({ createdAt: -1 }).exec()
+        res = await this.ctx.model.User.find({}).skip(skip).limit(Number(pageSize)).sort({ createdAt: -1 }).exec()
         count = await this.ctx.model.User.count({}).exec()
       }
     } else {
       if(search) {
-        res = await this.ctx.model.User.find({mobile: { $regex: search } }).populate('role').sort({ createdAt: -1 }).exec()
+        res = await this.ctx.model.User.find({mobile: { $regex: search } }).sort({ createdAt: -1 }).exec()
         count = res.length
       } else {
-        res = await this.ctx.model.User.find({}).populate('role').sort({ createdAt: -1 }).exec()
+        res = await this.ctx.model.User.find({}).sort({ createdAt: -1 }).exec()
         count = await this.ctx.model.User.count({}).exec()
       }
     }
@@ -93,10 +90,6 @@ class UserService extends Service {
   async findByIdAndUpdate(id, values) {
     return this.ctx.model.User.findByIdAndUpdate(id, values)
   }
-
-  
-
 }
-
 
 module.exports = UserService

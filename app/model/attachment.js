@@ -1,7 +1,7 @@
 module.exports = app => {
-  const mongoose = app.mongoose
+  const mysql = app.mysql
 
-  const AttachmentSchema = new mongoose.Schema({
+  const AttachmentSchema = new mysql.Schema({
     extname: { type: String },
     url: { type: String },
     filename: { type: String },
@@ -9,6 +9,6 @@ module.exports = app => {
     createdAt: { type: Date, default: Date.now }
   })
   
-  return mongoose.model('Attachment', AttachmentSchema)
+  return mysql.model('Attachment', AttachmentSchema)
 
 }
