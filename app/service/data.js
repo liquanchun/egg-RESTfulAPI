@@ -31,6 +31,7 @@ class DataService extends Service {
 
   // get all table
   async table(_table){
+    const { ctx, service } = this
     const results = await this.app.mysql.select(_table,{IsValid:1});
     return results
   }

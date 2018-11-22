@@ -6,15 +6,6 @@ module.exports = app => {
   const { router, controller } = app
   router.get('/', controller.home.index)
 
-  // role
-  // router.post('/api/role', controller.role.create)
-  // router.delete('/api/role/:id', controller.role.destroy)
-  // router.put('/api/role/:id', controller.role.update)
-  // router.get('/api/role/:id', controller.role.show)
-  // router.get('/api/role', controller.role.index)
-  router.delete('/api/role', controller.role.removes)
-  router.resources('role', '/api/role', controller.role)
-
   // userAccess
   router.post('/api/user/access/login', controller.userAccess.login)
   router.get('/api/user/access/current', app.jwt, controller.userAccess.current)
@@ -52,4 +43,14 @@ module.exports = app => {
   router.post('/api/data/:table/:id', controller.data.update)
   router.post('/api/datadel/:table', controller.data.removes)
   router.post('/api/datadel/:table/:id', controller.data.destroy)
+
+  //通用接口路由定义
+  router.get('/api/knex/:table/:id', controller.knex.show)
+  router.get('/api/knex/:table', controller.knex.table)
+  router.post('/api/knexlist/:table', controller.knex.list)
+  router.post('/api/knexlist/page/:table', controller.knex.listpage)
+  router.post('/api/knex/:table', controller.knex.create)
+  router.post('/api/knex/:table/:id', controller.knex.update)
+  router.post('/api/knexdel/:table', controller.knex.removes)
+  router.post('/api/knexdel/:table/:id', controller.knex.destroy)
 }

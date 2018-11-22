@@ -12,3 +12,6 @@ run/
 *.un~
 #.vscode/
 app/public/uploads/
+env.js
+config/config.default.js
+config/config.default.js
