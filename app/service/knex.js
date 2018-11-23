@@ -3,6 +3,16 @@ const knex = require('../extend/knex')
 
 class KnexService extends Service {
   // get all table
+  async tableList() {
+    const results = await knex.raw('select table_name,table_comment from information_schema.tables where table_schema=? and table_type=?',['car_app','base table'])
+    return results[0]
+  }
+
+  async columnList(_table) {
+    const results = await knex.raw('select column_name,data_type,column_comment from information_schema.columns where table_schema=? and table_name=?',['car_app',_table])
+    return results[0]
+  }
+  // get all table
   async data(_table) {
     const results = await knex(_table).where('IsValid', 1).select(`${_table}.*`)
     return results
@@ -14,14 +24,22 @@ class KnexService extends Service {
   }
 
   async dataByWhere(_table, _payload) {
-    const { paras, andor,ps,pi } = _payload
-    const [wherekey, wherevalue] = await this.ctx.service.knex.parameters(paras,andor)
+    const {
+      paras,
+      andor,
+      ps,
+      pi
+    } = _payload
+    const [wherekey, wherevalue] = await this.ctx.service.knex.parameters(paras, andor)
     const results = await knex(_table).where('IsValid', 1).whereRaw(wherekey, wherevalue)
     return results
   }
 
   async dataListPage(_table, _payload) {
-    const {_ps,_pi } = _payload
+    const {
+      _ps,
+      _pi
+    } = _payload
     const results = await knex.select('*')
       .from(_table)
       .where('IsValid', 1)
@@ -40,81 +58,92 @@ class KnexService extends Service {
     return results
   }
 
-  async dataListWherePage(_table,_payload) {
-    const { paras, andor,_ps,_pi } = _payload
-    const [wherekey, wherevalue] = await this.ctx.service.knex.parameters(paras,andor)
+  async dataListWherePage(_table, _payload) {
+    const {
+      paras,
+      andor,
+      _ps,
+      _pi
+    } = _payload
+    const [wherekey, wherevalue] = await this.ctx.service.knex.parameters(paras, andor)
 
     const results = await knex.select('*')
-    .from(_table)
-    .where('IsValid', 1)
-    .whereRaw(wherekey, wherevalue)
-    .limit(_ps)
-    .offset((_ps - 1) * _pi)
+      .from(_table)
+      .where('IsValid', 1)
+      .whereRaw(wherekey, wherevalue)
+      .limit(_ps)
+      .offset((_ps - 1) * _pi)
     return results
   }
 
-  async updateData(_table, data){
+  async updateData(_table, data) {
     const results = knex(_table).returning('id')
-    .where('Id', data.Id)
-    .update(data)
+      .where('Id', data.Id)
+      .update(data)
     return results
   }
 
-  async addData(_table, data){
+  async addData(_table, data) {
     const results = knex.returning('id').insert([data], 'id').into(_table)
     return results
   }
 
-  async firstData(_table, id){
+  async firstData(_table, id) {
     const results = knex(_table).where('Id', id).first()
     return results
   }
 
-  async dataCount(_table){
+  async dataCount(_table) {
     const results = knex(_table).where('IsValid', 1).count('id as a')
     return results
   }
 
-  async maxid(_table){
+  async maxid(_table) {
     const results = knex(_table).max('id as a')
     return results
   }
 
-  async deleteData(_table, id){
+  async deleteData(_table, id) {
     const results = knex(_table).where('Id', id).update('IsValid', 0)
     return results
   }
 
-  async deleteDataAll(_table, id){
+  async deleteDataAll(_table, id) {
     const results = knex(_table).where('Id', id).del()
     return results
-  } 
+  }
 
-  async deleteByPara(_table, keyname, keyvalue){
-    
+  async deleteByPara(_table, keyname, keyvalue) {
+
     const results = knex(_table).where(keyname, keyvalue).update('IsValid', 0)
     return results
   }
 
-  async deleteByParaAll(_table, keyname, keyvalue){
+  async deleteByParaAll(_table, keyname, keyvalue) {
     const results = knex(_table).where(keyname, keyvalue).del()
     return results
-  } 
+  }
 
-  async deleteByWhere(_table, _payload){
-    const { paras, andor,_ps,_pi } = _payload
-    const [wherekey, wherevalue] = await this.ctx.service.knex.parameters(paras,andor)
+  async deleteByWhere(_table, _payload) {
+    const {
+      paras,
+      andor
+    } = _payload
+    const [wherekey, wherevalue] = await this.ctx.service.knex.parameters(paras, andor)
     const results = knex(_table).whereRaw(wherekey, wherevalue).update('IsValid', 0)
     return results
   }
 
-  async deleteByWhereAll(_table, _payload){
-    const { paras, andor,_ps,_pi } = _payload
-    const [wherekey, wherevalue] = await this.ctx.service.knex.parameters(paras,andor)
+  async deleteByWhereAll(_table, _payload) {
+    const {
+      paras,
+      andor
+    } = _payload
+    const [wherekey, wherevalue] = await this.ctx.service.knex.parameters(paras, andor)
 
     const results = knex(_table).whereRaw(wherekey, wherevalue).del()
     return results
-  } 
+  }
 
   async parameters(paras, andor = 'and') {
     const keys = _.keys(paras);
@@ -138,7 +167,7 @@ class KnexService extends Service {
         values.push(paras[k]);
       }
     });
-  
+
     const raw = `(${_.join(keysql, ` ${andor} `)}) And (IsValid = 1)`;
     return [raw, values];
   }

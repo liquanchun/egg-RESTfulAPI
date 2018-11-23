@@ -1,6 +1,23 @@
 const Controller = require('egg').Controller
 
 class KnexController extends Controller {
+
+  // 获取表或试图字段
+  async columnlist(){
+    const { ctx, service } = this
+    const { table } = ctx.params
+    const res = await service.knex.columnList(table)
+    // 设置响应内容和响应状态码
+    ctx.helper.success({ctx, res})
+  }
+  
+  // 获取表或试图列表
+  async tablelist(){
+    const { ctx, service } = this
+    const res = await service.knex.tableList()
+    // 设置响应内容和响应状态码
+    ctx.helper.success({ctx, res})
+  }
     // 创建对象
   async create() {
     const { ctx, service } = this
