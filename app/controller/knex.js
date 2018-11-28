@@ -89,8 +89,11 @@ class KnexController extends Controller {
 
       // 调用 Service 进行业务处理
       const res = await service.knex.dataListWherePage(table,payload)
+      const cnt = await service.knex.dataCount(table)
+      this.logger.info(cnt)
+      const total = cnt[0].a
       // 设置响应内容和响应状态码
-      ctx.helper.success({ctx, res})
+      ctx.helper.success({ctx, res, total})
     }
   // 获取所有对象
   async table() {

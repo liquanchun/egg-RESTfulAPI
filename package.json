@@ -7,7 +7,7 @@
     "await-stream-ready": "^1.0.1",
     "egg": "^2.2.1",
     "egg-bcrypt": "^1.0.0",
-    "egg-cors": "^2.0.0",
+    "egg-cors": "^2.1.1",
     "egg-jwt": "^2.2.0",
     "egg-mongoose": "^2.1.1",
     "egg-mysql": "^3.0.0",

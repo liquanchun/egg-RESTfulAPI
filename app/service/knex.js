@@ -62,18 +62,27 @@ class KnexService extends Service {
     const {
       paras,
       andor,
-      _ps,
-      _pi
+      ps,
+      pi
     } = _payload
+    if(paras){
     const [wherekey, wherevalue] = await this.ctx.service.knex.parameters(paras, andor)
 
     const results = await knex.select('*')
       .from(_table)
       .where('IsValid', 1)
       .whereRaw(wherekey, wherevalue)
-      .limit(_ps)
-      .offset((_ps - 1) * _pi)
-    return results
+      .limit(ps)
+      .offset((ps - 1) * pi)
+      return results
+    } else {
+      const results = await knex.select('*')
+      .from(_table)
+      .where('IsValid', 1)
+      .limit(ps)
+      .offset((ps - 1) * pi)
+      return results
+    }
   }
 
   async updateData(_table, data) {

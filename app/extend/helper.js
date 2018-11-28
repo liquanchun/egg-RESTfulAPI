@@ -4,10 +4,11 @@ const moment = require('moment')
 exports.formatTime = time => moment(time).format('YYYY-MM-DD hh:mm:ss')
 
 // 处理成功响应
-exports.success = ({ ctx, res = null, msg = '请求成功' })=> {
+exports.success = ({ ctx, res = null,total = 0 , msg = '请求成功'})=> {
   ctx.body = {
     code: 0,
-    data: res,
+    total: total,
+    list: res,
     msg
   }
   ctx.status = 200
