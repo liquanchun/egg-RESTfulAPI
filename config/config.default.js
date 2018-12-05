@@ -17,7 +17,7 @@ module.exports = appInfo => {
     csrf: {
       enable: false
     },
-    domainWhiteList: [ 'http://localhost:8000' ]
+    domainWhiteList: [ 'http://localhost:4200' ]
   }
 
   config.multipart = {
@@ -38,7 +38,7 @@ module.exports = appInfo => {
       // 用户名
       user: 'root',
       // 密码
-      password: '*****',
+      password: 'KGFKO8dtZt',
       // 数据库名
       database: 'car_app',
     },

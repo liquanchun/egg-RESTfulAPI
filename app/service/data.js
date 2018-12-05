@@ -147,7 +147,7 @@ class DataService extends Service {
       }
     });
   
-    const raw = `(${_.join(keysql, ` ${andor} `)}) And (IsValid = 1)`;
+    const raw = _.size(keysql)>0 ? `(${_.join(keysql, ` ${andor} `)})`:'';
     return [raw, values];
   }
 }

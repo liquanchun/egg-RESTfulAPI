@@ -1,15 +1,15 @@
 const Service = require('egg').Service
 const knex = require('../extend/knex')
-
+const _ = require('lodash')
 class KnexService extends Service {
   // get all table
   async tableList() {
-    const results = await knex.raw('select table_name,table_comment from information_schema.tables where table_schema=? and table_type=?',['car_app','base table'])
+    const results = await knex.raw('select table_name,table_comment from information_schema.tables where table_schema=? and table_type=?', ['car_app', 'base table'])
     return results[0]
   }
 
   async columnList(_table) {
-    const results = await knex.raw('select column_name,data_type,column_comment from information_schema.columns where table_schema=? and table_name=?',['car_app',_table])
+    const results = await knex.raw('select column_name,data_type,column_comment from information_schema.columns where table_schema=? and table_name=?', ['car_app', _table])
     return results[0]
   }
   // get all table
@@ -31,7 +31,10 @@ class KnexService extends Service {
       pi
     } = _payload
     const [wherekey, wherevalue] = await this.ctx.service.knex.parameters(paras, andor)
-    const results = await knex(_table).where('IsValid', 1).whereRaw(wherekey, wherevalue)
+
+    const results = wherekey ? await knex(_table).where('IsValid', 1).whereRaw(wherekey, wherevalue) :
+      await knex(_table).where('IsValid', 1)
+
     return results
   }
 
@@ -65,22 +68,36 @@ class KnexService extends Service {
       ps,
       pi
     } = _payload
-    if(paras){
-    const [wherekey, wherevalue] = await this.ctx.service.knex.parameters(paras, andor)
+    if (paras) {
+      const [wherekey, wherevalue] = await this.ctx.service.knex.parameters(paras, andor)
+      console.log(pi);
+      console.log(ps);
+      console.log(wherekey);
+      console.log(wherevalue);
 
-    const results = await knex.select('*')
-      .from(_table)
-      .where('IsValid', 1)
-      .whereRaw(wherekey, wherevalue)
-      .limit(ps)
-      .offset((ps - 1) * pi)
+      let results = null
+      if (wherekey) {
+        results = await knex.select('*')
+          .from(_table)
+          .where('IsValid', 1)
+          .whereRaw(wherekey, wherevalue)
+          .limit(ps)
+          .offset((pi - 1) * ps)
+      } else {
+        results = await knex.select('*')
+          .from(_table)
+          .where('IsValid', 1)
+          .limit(ps)
+          .offset((pi - 1) * ps)
+      }
+
       return results
     } else {
       const results = await knex.select('*')
-      .from(_table)
-      .where('IsValid', 1)
-      .limit(ps)
-      .offset((ps - 1) * pi)
+        .from(_table)
+        .where('IsValid', 1)
+        .limit(ps)
+        .offset((pi - 1) * ps)
       return results
     }
   }
@@ -139,7 +156,9 @@ class KnexService extends Service {
       andor
     } = _payload
     const [wherekey, wherevalue] = await this.ctx.service.knex.parameters(paras, andor)
-    const results = knex(_table).whereRaw(wherekey, wherevalue).update('IsValid', 0)
+
+    const results = wherekey ? knex(_table).whereRaw(wherekey, wherevalue).update('IsValid', 0):
+                               knex(_table).update('IsValid', 0)
     return results
   }
 
@@ -171,13 +190,14 @@ class KnexService extends Service {
           keyword.push(kw);
         } else {
           keyword.push(k);
-          keysql.push(`${k} like ?`);
+          // keysql.push(`${k} like ?`);
+          keysql.push(`${k} = ?`);
         }
         values.push(paras[k]);
       }
     });
 
-    const raw = `(${_.join(keysql, ` ${andor} `)}) And (IsValid = 1)`;
+    const raw = _.size(keysql) > 0 ? `(${_.join(keysql, ` ${andor} `)})` : '';
     return [raw, values];
   }
 
