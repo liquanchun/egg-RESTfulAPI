@@ -24,3 +24,8 @@ exports.mysql = {
   enable: true,
   package: 'egg-mysql',
 };
+
+exports.knex = {
+  enable: true,
+  package: 'knex',
+};

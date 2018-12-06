@@ -6,16 +6,17 @@ class UserAccessService extends Service {
 
   async login(payload) {
     const { ctx, service } = this
-    const user = await service.user.findByMobile(payload.mobile)
+    const user = await service.knex.dataByPara("sys_user","UserId",payload.UserId)
     if(!user){
       ctx.throw(404, 'user not found')
     }
-    let verifyPsw = await ctx.compare(payload.password, user.password)
+    // let verifyPsw = await ctx.compare(payload.Pwd, user[0].Pwd) 
+    let verifyPsw = payload.Pwd == user[0].Pwd ;
     if(!verifyPsw) {
       ctx.throw(404, 'user password is error')
     }
     // 生成Token令牌
-    return { token: await service.actionToken.apply(user._id) }
+    return { token: await service.actionToken.apply(user[0].UserId) }
   }
 
   async logout() {

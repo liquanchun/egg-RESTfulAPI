@@ -4,7 +4,7 @@ class UserService extends Service {
   // create======================================================================================================>
   async create(payload) {
     const { ctx, service } = this
-    //payload.password = await this.ctx.genHash(payload.password)
+    // payload.Pwd = await this.ctx.genHash(payload.password)
     const result = await this.app.mysql.insert('sys_user', payload);
     return result.affectedRows
   }
@@ -81,6 +81,10 @@ class UserService extends Service {
   // Commons======================================================================================================>
   async findByMobile(mobile) {
     return this.ctx.model.User.findOne({mobile: mobile})
+  }
+
+  async findByUerId(uesrId) {
+    return this.ctx.model.User.findOne({uesrId: uesrId})
   }
 
   async find(id) {

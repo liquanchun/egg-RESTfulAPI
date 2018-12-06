@@ -12,12 +12,12 @@ class UserAccessController extends Controller {
     super(ctx)
 
     this.UserLoginTransfer = {
-      mobile: { type: 'string', required: true, allowEmpty: false },
-      password: { type: 'string', required: true, allowEmpty: false }
+      UserId: { type: 'string', required: true, allowEmpty: false },
+      Pwd: { type: 'string', required: true, allowEmpty: false }
     }
 
     this.UserResetPswTransfer = {
-      password: { type: 'password', required: true, allowEmpty: false, min: 6 },
+      pwd: { type: 'password', required: true, allowEmpty: false, min: 6 },
       oldPassword: { type: 'password', required: true, allowEmpty: false, min: 6 }
     }
 
@@ -35,9 +35,9 @@ class UserAccessController extends Controller {
     // 组装参数
     const payload = ctx.request.body || {}
     // 调用 Service 进行业务处理
-    const res = await service.userAccess.login(payload)
+    const data = await service.userAccess.login(payload)
     // 设置响应内容和响应状态码
-    ctx.helper.success({ctx, res})
+    ctx.helper.success({ctx, data})
   }
 
   // 用户登出
