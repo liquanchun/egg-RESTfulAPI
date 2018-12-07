@@ -1,8 +1,7 @@
 'use strict'
 
 const Service = require('egg').Service
-const dayjs = require('dayjs')
-
+const moment = require('moment')
 class UserAccessService extends Service {
 
   async login(payload) {
@@ -19,12 +18,12 @@ class UserAccessService extends Service {
     if (!verifyPsw) {
       ctx.throw(404, 'user password is error')
     }
+    ctx.helper.success({ctx, res})
     // 更新登录记录
     const ct = await service.knex.updateData("sys_user", {
       Id: user[0].Id,
-      LastLoginTime: dayjs().format('YYYY-MM-DD HH:mm:ss')
+      LastLoginTime: moment().format('YYYY-MM-DD hh:mm:ss')
     })
-    // console.log(dayjs().format('YYYY-MM-DD HH:mm:ss'))
     // 生成Token令牌
     return {
       token: await service.actionToken.apply(user[0].UserId)
