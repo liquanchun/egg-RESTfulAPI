@@ -183,7 +183,7 @@ class KnexService extends Service {
     const keysql = [];
     const values = [];
     keys.forEach((k) => {
-      if (paras[k]) {
+      if (paras[k] != null && paras[k] != undefined) {
         if (k.includes('-')) {
           const kw = k.split('-')[0];
           if (keyword.includes(kw)) {

@@ -1,9 +1,24 @@
 'use strict'
+const knex = require('../service/knex.js')
 
 module.exports = (option, app) => {
   return async function (ctx, next) {
     try {
       ctx.logger.info(`Request Body:${JSON.stringify(ctx.request.body)}`);
+      // 解析token
+      // const {
+      //   header: {
+      //     authorization
+      //   }
+      // } = ctx.request
+      // if (authorization) {
+      //   const tokenkey = ctx.app.config.jwt.secret
+      //   console.log(authorization)
+      //   const decoded = ctx.app.jwt.verify(authorization, tokenkey)
+      //   console.log(decoded)
+      // } else {
+      //   console.log('token is null')
+      // }
       await next()
     } catch (err) {
       // 所有的异常都在 app 上触发一个 error 事件，框架会记录一条错误日志

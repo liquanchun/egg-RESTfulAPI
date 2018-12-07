@@ -102,7 +102,6 @@ class KnexController extends Controller {
     const { table } = ctx.params
     // 调用 Service 进行业务处理
     const res = await service.knex.data(table)
-    
     // 设置响应内容和响应状态码
     ctx.helper.success({ctx, res})
   }
