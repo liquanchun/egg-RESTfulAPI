@@ -38,7 +38,7 @@ module.exports = appInfo => {
       // 用户名
       user: 'root',
       // 密码
-      password: 'KGFKO8dtZt',
+      password: '**********',
       // 数据库名
       database: 'car_app',
     },
