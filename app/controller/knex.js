@@ -27,7 +27,7 @@ class KnexController extends Controller {
     // 组装参数
     const payload = ctx.request.body || {}
     // 调用 Service 进行业务处理
-    const res = await service.knex.addData(table,payload)
+    const res = await service.knex.addData(table,this.ctx.helper.newBody(payload))
     // 设置响应内容和响应状态码
     ctx.helper.success({ctx, res})
   }
@@ -52,7 +52,7 @@ class KnexController extends Controller {
     const { table, id } = ctx.params
     const payload = ctx.request.body || {}
     // 调用 Service 进行业务处理
-    await service.knex.updateData(table, payload)
+    await service.knex.updateData(table, this.ctx.helper.newBody(payload))
     // 设置响应内容和响应状态码
     ctx.helper.success({ctx})
   }
@@ -63,9 +63,9 @@ class KnexController extends Controller {
     // 组装参数
     const { table, id } = ctx.params
     // 调用 Service 进行业务处理
-    const res = await service.knex.firstData(table,id)
+    const data = await service.knex.firstData(table,id)
     // 设置响应内容和响应状态码
-    ctx.helper.success({ctx, res})
+    ctx.helper.success({ctx, data})
   }
 
     // 获取所有对象(分页/模糊)
@@ -74,9 +74,8 @@ class KnexController extends Controller {
       // 组装参数
       const { table } = ctx.params
       const payload = ctx.request.body || {}
-
       // 调用 Service 进行业务处理
-      const res = await service.knex.dataByWhere(table,payload)
+      const res = await service.knex.dataByWhere(table,this.ctx.helper.newBody(payload))
       // 设置响应内容和响应状态码
       ctx.helper.success({ctx, res})
     }
@@ -88,10 +87,7 @@ class KnexController extends Controller {
       const payload = ctx.request.body || {}
 
       // 调用 Service 进行业务处理
-      const res = await service.knex.dataListWherePage(table,payload)
-      const cnt = await service.knex.dataCount(table)
-      this.logger.info(cnt)
-      const total = cnt[0].a
+      const {res,total} = await service.knex.dataListWherePage(table,this.ctx.helper.newBody(payload))
       // 设置响应内容和响应状态码
       ctx.helper.success({ctx, res, total})
     }

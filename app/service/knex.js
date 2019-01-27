@@ -31,7 +31,7 @@ class KnexService extends Service {
       like,
       andor
     } = _payload
-    const [wherekey, wherevalue] = await this.ctx.service.knex.parameters(paras,like, andor)
+    const [wherekey, wherevalue] = await this.ctx.service.knex.parameters(paras, like, andor)
 
     const results = wherekey ? await knex(_table).where('IsValid', 1).whereRaw(wherekey, wherevalue) :
       await knex(_table).where('IsValid', 1)
@@ -71,36 +71,42 @@ class KnexService extends Service {
       pi
     } = _payload
     if (paras) {
-      const [wherekey, wherevalue] = await this.ctx.service.knex.parameters(paras,like, andor)
-      console.log(pi);
-      console.log(ps);
-      console.log(wherekey);
-      console.log(wherevalue);
+      const [wherekey, wherevalue] = await this.ctx.service.knex.parameters(paras, like, andor)
 
-      let results = null
+      let res = null
+      let total = 0
       if (wherekey) {
-        results = await knex.select('*')
+        res = await knex.select('*')
           .from(_table)
           .where('IsValid', 1)
           .whereRaw(wherekey, wherevalue)
           .limit(ps)
           .offset((pi - 1) * ps)
+
+        let cnt = await this.ctx.service.knex.dataCountWhere(_table,wherekey,wherevalue)
+        total = cnt[0].a
       } else {
-        results = await knex.select('*')
+        res = await knex.select('*')
           .from(_table)
           .where('IsValid', 1)
           .limit(ps)
           .offset((pi - 1) * ps)
+
+        let cnt = await this.ctx.service.knex.dataCount(_table)
+        total = cnt[0].a
       }
 
-      return results
+      return {res,total}
     } else {
-      const results = await knex.select('*')
+      const res = await knex.select('*')
         .from(_table)
         .where('IsValid', 1)
         .limit(ps)
         .offset((pi - 1) * ps)
-      return results
+
+      let cnt = await this.ctx.service.knex.dataCount(_table)
+      let total = cnt[0].a
+      return {res,total}
     }
   }
 
@@ -123,6 +129,11 @@ class KnexService extends Service {
 
   async dataCount(_table) {
     const results = knex(_table).where('IsValid', 1).count('id as a')
+    return results
+  }
+
+  async dataCountWhere(_table,_wherekey,_wherevalue) {
+    const results = knex(_table).where('IsValid', 1).whereRaw(_wherekey, _wherevalue).count('id as a')
     return results
   }
 
@@ -158,10 +169,10 @@ class KnexService extends Service {
       like,
       andor,
     } = _payload
-    const [wherekey, wherevalue] = await this.ctx.service.knex.parameters(paras,like, andor)
+    const [wherekey, wherevalue] = await this.ctx.service.knex.parameters(paras, like, andor)
 
-    const results = wherekey ? knex(_table).whereRaw(wherekey, wherevalue).update('IsValid', 0):
-                               knex(_table).update('IsValid', 0)
+    const results = wherekey ? knex(_table).whereRaw(wherekey, wherevalue).update('IsValid', 0) :
+      knex(_table).update('IsValid', 0)
     return results
   }
 
@@ -171,13 +182,13 @@ class KnexService extends Service {
       like,
       andor,
     } = _payload
-    const [wherekey, wherevalue] = await this.ctx.service.knex.parameters(paras,like, andor)
+    const [wherekey, wherevalue] = await this.ctx.service.knex.parameters(paras, like, andor)
 
     const results = knex(_table).whereRaw(wherekey, wherevalue).del()
     return results
   }
 
-  async parameters(paras, like='', andor = 'and') {
+  async parameters(paras, like = '', andor = 'and') {
     const keys = _.keys(paras);
     const keyword = [];
     const keysql = [];
@@ -194,15 +205,15 @@ class KnexService extends Service {
           keyword.push(kw);
         } else {
           keyword.push(k);
-          if(like){
+          if (like) {
             keysql.push(`${k} like ?`);
-          }else{
+          } else {
             keysql.push(`${k} = ?`);
           }
         }
-        if(like){
+        if (like) {
           values.push('%' + paras[k] + '%');
-        }else{
+        } else {
           values.push(paras[k]);
         }
       }
