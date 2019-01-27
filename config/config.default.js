@@ -21,12 +21,12 @@ module.exports = appInfo => {
   }
 
   config.multipart = {
-      fileExtensions: ['.apk', '.pptx', '.docx', '.csv', '.doc', '.ppt', '.pdf', '.pages', '.wav', '.mov'], // 增加对 .apk 扩展名的支持
-    },
+    fileExtensions: ['.apk', '.pptx', '.docx', '.csv', '.doc', '.ppt', '.pdf', '.pages', '.wav', '.mov'], // 增加对 .apk 扩展名的支持
+  },
 
-    config.bcrypt = {
-      saltRounds: 10 // default 10
-    }
+  config.bcrypt = {
+    saltRounds: 10 // default 10
+  }
 
   config.mysql = {
     // 单数据库信息配置
@@ -38,7 +38,7 @@ module.exports = appInfo => {
       // 用户名
       user: 'root',
       // 密码
-      password: 'KGFKO8dtZt',
+      password: '**********',
       // 数据库名
       database: 'car_app',
     },
