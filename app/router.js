@@ -47,13 +47,15 @@ module.exports = app => {
   //通用接口路由定义
   router.get('/api/knex/:table/:id', controller.knex.show)
   router.get('/api/knex/:table', controller.knex.table)
+  router.get('/api/knexlist/page/:table', controller.knex.getlistpage)
   router.post('/api/knexlist/:table', controller.knex.list)
   router.post('/api/knexlist/page/:table', controller.knex.listpage)
   router.post('/api/knex/:table', controller.knex.create)
   router.post('/api/knex/:table/:id', controller.knex.update)
   router.post('/api/knexdel/:table', controller.knex.removes)
   router.post('/api/knexdel/:table/:id', controller.knex.destroy)
-
+  router.post('/api/knex/sql',controller.knex.listBySql)
+  
   router.get('/api/tablelist', controller.knex.tablelist)
   router.get('/api/collist/:table', controller.knex.columnlist)
 }

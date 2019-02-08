@@ -4,6 +4,11 @@ const knex = require('knex')(config)
 
 const _ = require('lodash')
 class KnexService extends Service {
+
+  async datalistBySql(sql){
+    const results = await knex.raw(sql)
+    return results[0]
+  }
   // get all table
   async tableList() {
     const results = await knex.raw('select table_name,table_comment from information_schema.tables where table_schema=? and table_type=?', ['car_app', 'base table'])

@@ -1,5 +1,6 @@
 const Controller = require('egg').Controller
 
+const _ = require('lodash')
 class KnexController extends Controller {
 
   // 获取表或试图字段
@@ -68,6 +69,14 @@ class KnexController extends Controller {
     ctx.helper.success({ctx, data})
   }
 
+  async listBySql(){
+    const { ctx, service } = this
+    const payload = ctx.request.body || {}
+    // 调用 Service 进行业务处理
+    const res = await service.knex.datalistBySql(payload.sql)
+    // 设置响应内容和响应状态码
+    ctx.helper.success({ctx, res})
+  }
     // 获取所有对象(分页/模糊)
     async list() {
       const { ctx, service } = this
@@ -88,6 +97,20 @@ class KnexController extends Controller {
 
       // 调用 Service 进行业务处理
       const {res,total} = await service.knex.dataListWherePage(table,this.ctx.helper.newBody(payload))
+      // 设置响应内容和响应状态码
+      ctx.helper.success({ctx, res, total})
+    }
+    async getlistpage() {
+      const { ctx, service } = this
+      // 组装参数
+      const { table } = ctx.params
+      const payload = ctx.request.query
+      const newpayload = _.pick(payload, ['pi','ps','like','andor'])
+      newpayload.pi = _.toInteger(newpayload.pi)
+      newpayload.ps = _.toInteger(newpayload.ps)
+      newpayload.paras = _.omit(payload, ['pi','ps','like','andor'])
+      // 调用 Service 进行业务处理
+      const {res,total} = await service.knex.dataListWherePage(table,newpayload)
       // 设置响应内容和响应状态码
       ctx.helper.success({ctx, res, total})
     }
