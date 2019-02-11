@@ -54,7 +54,7 @@ module.exports = app => {
   router.post('/api/knex/:table/:id', controller.knex.update)
   router.post('/api/knexdel/:table', controller.knex.removes)
   router.post('/api/knexdel/:table/:id', controller.knex.destroy)
-  router.post('/api/knex/sql',controller.knex.listBySql)
+  router.post('/api/knexsql',controller.knex.listBySql)
   
   router.get('/api/tablelist', controller.knex.tablelist)
   router.get('/api/collist/:table', controller.knex.columnlist)

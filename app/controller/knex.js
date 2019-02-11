@@ -52,6 +52,7 @@ class KnexController extends Controller {
     // 组装参数
     const { table, id } = ctx.params
     const payload = ctx.request.body || {}
+    payload['Id'] = id
     // 调用 Service 进行业务处理
     await service.knex.updateData(table, this.ctx.helper.newBody(payload))
     // 设置响应内容和响应状态码
