@@ -32,12 +32,15 @@ class UserAccessService extends Service {
       msg: 'ok',
       user: {
         token: await service.actionToken.apply(user[0].UserId),
-        name: payload.userName,
+        userid: user[0].UserId,
         id: user[0].Id,
         roleids:user[0].RoleIds,
         rolenames:user[0].RoleIdsTxt,
-        nickname:user[0].UserName,
+        username:user[0].UserName,
         avatar:user[0].Avatar,
+        profile:user[0].Profile,
+        mobile:user[0].Mobile,
+        wechat:user[0].Wechat,
         email:user[0].Email,
         time: +new Date()
       }
