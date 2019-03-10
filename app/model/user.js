@@ -5,6 +5,6 @@ module.exports = app => {
     userId: { type: String, required: true },
     userName: { type: String, required: true },
     id: { type: Number, required: true }
-  })
-  return mysql.model('sys_user', UserSchema)
-}
+  });
+  return mysql.model('sys_user', UserSchema);
+};

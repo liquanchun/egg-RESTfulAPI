@@ -1,5 +1,5 @@
 module.exports = app => {
-  const mysql = app.mysql
+  const mysql = app.mysql;
 
   const AttachmentSchema = new mysql.Schema({
     extname: { type: String },
@@ -7,8 +7,8 @@ module.exports = app => {
     filename: { type: String },
     extra: {  type: String  },
     createdAt: { type: Date, default: Date.now }
-  })
+  });
   
-  return mysql.model('Attachment', AttachmentSchema)
+  return mysql.model('Attachment', AttachmentSchema);
 
-}
+};

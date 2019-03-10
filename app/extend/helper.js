@@ -1,7 +1,7 @@
-const moment = require('moment')
-const _ = require('lodash')
+const moment = require('moment');
+const _ = require('lodash');
 // 格式化时间
-exports.formatTime = time => moment(time).format('YYYY-MM-DD hh:mm:ss')
+exports.formatTime = time => moment(time).format('YYYY-MM-DD hh:mm:ss');
 
 // 处理成功响应
 exports.success = ({
@@ -17,14 +17,14 @@ exports.success = ({
     list: res,
     data: data,
     msg
-  }
-  ctx.status = 200
-}
+  };
+  ctx.status = 200;
+};
 
 exports.newBody = payload => {
   const body = _.mapValues(payload, function (o) {
-    return _.isArray(o) ? o.toString() : o
-  })
-  if(body.UpdateTime) delete body.UpdateTime
-  return body
-}
+    return _.isArray(o) ? o.toString() : o;
+  });
+  if (body.UpdateTime) delete body.UpdateTime;
+  return body;
+};
