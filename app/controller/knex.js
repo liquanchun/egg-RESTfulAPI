@@ -110,6 +110,10 @@ class KnexController extends Controller {
       newpayload.pi = _.toInteger(newpayload.pi);
       newpayload.ps = _.toInteger(newpayload.ps);
       newpayload.paras = _.omit(payload, ['pi','ps','like','andor']);
+      if(!newpayload.paras.Id || newpayload.paras.Id == '0'){
+        delete newpayload.paras.Id;
+      }
+      console.log(newpayload);
       // 调用 Service 进行业务处理;
       const {res,total} = await service.knex.dataListWherePage(table,newpayload);
       // 设置响应内容和响应状态码;

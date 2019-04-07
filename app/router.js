@@ -63,4 +63,6 @@ module.exports = app => {
 
   //新增商品入库 
   router.post('/api/goodsin',controller.goods.createGoods);
+  //新增入住登记 
+  router.post('/api/checkin',controller.checkin.createCheckin);
 };
