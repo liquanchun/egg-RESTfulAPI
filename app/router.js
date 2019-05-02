@@ -69,4 +69,6 @@ module.exports = app => {
   router.post('/api/checkout',controller.checkin.createCheckout);
   //取消订单
   router.post('/api/cancelorder',controller.checkin.cancelOrder);
+  // 换房
+  router.post('/api/changehouse',controller.checkin.changeHouse);
 };
