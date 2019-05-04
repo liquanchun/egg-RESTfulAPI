@@ -199,6 +199,14 @@ class KnexService extends Service {
     return results;
   }
 
+  async callsp(spname,paras){
+    const arr = _.fill(Array(_.size(paras)), '?');
+    const sql = `call ${spname} (${ arr.toString().replace('\'','') })`;
+    console.log('sql 语句：' + sql);
+    const rlt = knex.raw(sql, paras);
+    return rlt;
+ }
+
   async parameters(paras, like = '', andor = 'and') {
     const keys = _.keys(paras);
     const keyword = [];
@@ -233,6 +241,7 @@ class KnexService extends Service {
     const raw = _.size(keysql) > 0 ? `(${_.join(keysql, ` ${andor} `)})` : '';
     return [raw, values];
   }
+
 
 }
 

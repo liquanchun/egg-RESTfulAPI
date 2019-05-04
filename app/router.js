@@ -56,6 +56,7 @@ module.exports = app => {
   router.post('/api/knexdel/:table/:id', controller.knex.destroy);
   router.post('/api/knexsql',controller.knex.listBySql);
   
+  router.post('/api/sp/:spname',controller.knex.callsp);
   //获取数据表类别
   router.get('/api/tablelist', controller.knex.tablelist);
   //根据表获取表字段列表
@@ -71,4 +72,8 @@ module.exports = app => {
   router.post('/api/cancelorder',controller.checkin.cancelOrder);
   // 换房
   router.post('/api/changehouse',controller.checkin.changeHouse);
+  // 续住
+  router.post('/api/adddays',controller.checkin.orderAdddays);
+  // 获取房间的标准配置商品信息 
+  router.post('/api/housegoods',controller.goods.housegoods);
 };

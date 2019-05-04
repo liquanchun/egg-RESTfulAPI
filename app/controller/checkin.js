@@ -12,10 +12,15 @@ class CheckinController extends Controller {
     const conn = await this.app.mysql.beginTransaction(); // 初始化事务
 
     try {
+      let newbody = this.ctx.helper.newBody(payload);
+      // 预计退房时间
+      newbody.checkouttime = moment().add(newbody.days,'days').format('YYYY-MM-DD HH:mm:ss');
       const res = await conn.insert(
         'bus_checkin',
-        this.ctx.helper.newBody(payload)
-      ); // 第一步操作
+        newbody
+      );
+      
+      // 第一步操作
       const res2 = await conn.update('hou_houseinfo', {
         id: payload.houseid,
         Status: '住人'
@@ -47,29 +52,38 @@ class CheckinController extends Controller {
   async createCheckout() {
     const { ctx, service } = this;
     // 组装参数
-    const payload = ctx.request.body || {};
+    const {order,goods} = ctx.request.body || {};
     const conn = await this.app.mysql.beginTransaction(); // 初始化事务
 
     try {
       const res = await conn.update('bus_checkin', {
-        id: payload.Id,
+        id: order.Id,
         Status: '已结算',
-        Settle: payload.Settle,
-        SettleMan: payload.SettleMan,
-        SettlePayType: payload.SettlePayType,
+        Settle: order.Settle,
+        SettleMan: order.SettleMan,
+        SettlePayType: order.SettlePayType,
         SettleTime: moment().format('YYYY-MM-DD HH:mm:ss')
       }); // 第一步操作
       const res2 = await conn.update('hou_houseinfo', {
-        id: payload.HouseId,
+        id: order.HouseId,
         Status: '空脏'
       });
       const res3 = await conn.insert('hou_housestatus', {
-        HouseId: payload.HouseId,
-        CheckinId: payload.Id,
+        HouseId: order.HouseId,
+        CheckinId: order.Id,
         OldStatus: '住人',
         NewStatus: '空脏'
       });
       // await conn.update(table, row2);  // 第二步操作
+      if(goods && goods.length > 0){
+        for (let index = 0; index < goods.length; index++) {
+          let data = _.pick(goods[index], ['Price', 'Amount', 'Num', 'CreatedBy']);
+          data['GoodsId'] = goods[index]['Id'];
+          data['CheckinId'] = order.Id;
+          await conn.insert('bus_settlegoods',data);
+          await this.app.mysql.query('update hou_house_goods set blance = blance - ? where isValid = 1 and houseid = ? and goodsid = ? ', [data['Num'], order.HouseId , data['goodsId']]);
+        }
+      }
       await conn.commit(); // 提交事务
 
       // 设置响应内容和响应状态码
@@ -163,6 +177,32 @@ class CheckinController extends Controller {
       throw err;
     }
   }
+  // 订单续住
+  async orderAdddays() {
+    const { ctx, service } = this;
+    // 组装参数
+    const payload = ctx.request.body || {};
+    const conn = await this.app.mysql.beginTransaction(); // 初始化事务
+
+    try {
+      // 修改预计结算时间
+      const res = await this.app.mysql.query('update bus_checkin set checkouttime = DATE_ADD(checkouttime,INTERVAL ? day) where id = ?', [payload.days, payload.checkinid]);
+      let newbody = this.ctx.helper.newBody(payload);
+      newbody['SettleTime'] = moment().format('YYYY-MM-DD HH:mm:ss');
+      const res2 = await conn.insert(
+        'bus_checkin_add',
+         newbody
+        ); // 第一步操作
+
+      await conn.commit(); // 提交事务
+      ctx.helper.success({ ctx, res });
+    } catch (err) {
+      // error, rollback
+      await conn.rollback(); // 一定记得捕获异常后回滚事务！！
+      throw err;
+    }
+  }
+
 }
 
 module.exports = CheckinController;

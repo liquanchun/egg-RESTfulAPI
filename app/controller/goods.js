@@ -36,6 +36,16 @@ class GoodsController extends Controller {
             res
         });
     }
+
+    async housegoods(){
+        const {
+            ctx,
+            service
+        } = this;
+        const payload = ctx.request.body || {};
+        const typeid = payload.typeid;
+
+    }
 }
 
 module.exports = GoodsController;

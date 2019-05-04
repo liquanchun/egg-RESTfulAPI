@@ -143,6 +143,21 @@ class KnexController extends Controller {
     // 设置响应内容和响应状态码;
     ctx.helper.success({ctx,res});
   }
+
+  async callsp(){
+    const { ctx, service } = this;
+    // 组装参数;
+    // const payload = ctx.queries.id;
+    const { spname } = ctx.params;
+    const values = _.values(ctx.request.body);
+
+    const arr = _.fill(Array(_.size(values)), '?');
+    const sql = `call ${spname} (${ arr.toString().replace('\'','') })`;
+    const res1 = await this.app.mysql.query(sql,values);
+    const res = res1[0];
+    // 设置响应内容和响应状态码;
+    ctx.helper.success({ctx,res});
+  }
 }
 
 module.exports = KnexController;
