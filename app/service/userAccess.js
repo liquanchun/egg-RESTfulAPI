@@ -25,6 +25,7 @@ class UserAccessService extends Service {
     // 更新登录记录
     const ct = await service.knex.updateData('sys_user', {
       Id: user[0].Id,
+      Times:user[0].Times + 1,
       LastLoginTime: moment().format('YYYY-MM-DD hh:mm:ss')
     });
     // 生成Token令牌

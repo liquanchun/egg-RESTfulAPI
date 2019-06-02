@@ -20,11 +20,12 @@ class CheckinController extends Controller {
         newbody
       );
       
-      // 第一步操作
+      // 修改房间状态
       const res2 = await conn.update('hou_houseinfo', {
         id: payload.houseid,
         Status: '住人'
       });
+      // 新增房间状态流水
       const res3 = await conn.insert('hou_housestatus', {
         HouseId: payload.houseid,
         OldStatus: '空净',
@@ -37,7 +38,9 @@ class CheckinController extends Controller {
           Status: '订单'
         });
       }
-      // await conn.update(table, row2);  // 第二步操作
+      // 修改预约状态
+      await this.app.mysql.query(`update bus_booking b join bus_checkin h on b.PreHouseId = h.HouseId
+                                      set b.Status='订单' where h.Id = ? `, res.insertId);
       await conn.commit(); // 提交事务
 
       // 设置响应内容和响应状态码
@@ -56,6 +59,7 @@ class CheckinController extends Controller {
     const conn = await this.app.mysql.beginTransaction(); // 初始化事务
 
     try {
+      // 更新结算单信息
       const res = await conn.update('bus_checkin', {
         id: order.Id,
         Status: '已结算',
@@ -63,18 +67,20 @@ class CheckinController extends Controller {
         SettleMan: order.SettleMan,
         SettlePayType: order.SettlePayType,
         SettleTime: moment().format('YYYY-MM-DD HH:mm:ss')
-      }); // 第一步操作
+      }); 
+      // 更新房间状态 
       const res2 = await conn.update('hou_houseinfo', {
         id: order.HouseId,
         Status: '空脏'
       });
+      // 新增房间状态变更记录
       const res3 = await conn.insert('hou_housestatus', {
         HouseId: order.HouseId,
         CheckinId: order.Id,
         OldStatus: '住人',
         NewStatus: '空脏'
       });
-      // await conn.update(table, row2);  // 第二步操作
+      // 更新房间商品库存
       if(goods && goods.length > 0){
         for (let index = 0; index < goods.length; index++) {
           let data = _.pick(goods[index], ['Price', 'Amount', 'Num', 'CreatedBy']);
@@ -84,7 +90,10 @@ class CheckinController extends Controller {
           await this.app.mysql.query('update hou_house_goods set blance = blance - ? where isValid = 1 and houseid = ? and goodsid = ? ', [data['Num'], order.HouseId , data['goodsId']]);
         }
       }
-      await conn.commit(); // 提交事务
+      // 更新会员积分
+      await this.app.mysql.query('call sp_updateMember(?)', order.Id);
+      
+      await conn.commit(); 
 
       // 设置响应内容和响应状态码
       ctx.helper.success({ ctx, res });
@@ -169,6 +178,7 @@ class CheckinController extends Controller {
         remark: `换房，原房号${payload.oldhouseno}`,
         createdby: payload.createdby
       });
+      
       await conn.commit(); // 提交事务
       ctx.helper.success({ ctx, res });
     } catch (err) {

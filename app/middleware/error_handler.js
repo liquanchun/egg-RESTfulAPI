@@ -18,7 +18,14 @@ module.exports = (option, app) => {
       //   console.log(decoded)
       // } else {
       //   console.log('token is null')
-      // }
+      // }  
+      await ctx.app.mysql.insert('sys_log', {
+          method: ctx.request.method,
+          ip: ctx.request.ip,
+          url: ctx.url,
+          user: ctx.headers.user,
+          msg: JSON.stringify(ctx.request.body),
+      });
       await next();
     } catch (err) {
       // 所有的异常都在 app 上触发一个 error 事件，框架会记录一条错误日志
@@ -33,9 +40,17 @@ module.exports = (option, app) => {
         status: status, // 服务端自身的处理逻辑错误(包含框架错误500 及 自定义业务逻辑错误533开始 ) 客户端请求参数导致的错误(4xx开始)，设置不同的状态码
         msg: error
       };
+      ctx.logger.error(error);
       if (status === 422) {
         ctx.body.detail = err.errors;
       }
+      await ctx.app.mysql.insert('sys_log', {
+          method: 'error',
+          ip: ctx.request.ip,
+          url: ctx.url,
+          user: ctx.headers.user,
+          msg: JSON.stringify(err),
+      });
       ctx.status = 200;
     }
   };

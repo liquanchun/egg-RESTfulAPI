@@ -76,4 +76,11 @@ module.exports = app => {
   router.post('/api/adddays',controller.checkin.orderAdddays);
   // 获取房间的标准配置商品信息 
   router.post('/api/housegoods',controller.goods.housegoods);
+  // 新增预约信息 
+  router.post('/api/booking',controller.booking.newbooking);
+  // 预约房间信息 
+  router.post('/api/bookhouseid',controller.booking.getBookHouse);
+
+  // 测试事务 
+  router.get('/api/testtrans',controller.booking.testTrans);
 };
